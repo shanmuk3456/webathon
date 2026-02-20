@@ -15,6 +15,10 @@
 # production
 /build
 
+# uploads (user content)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 # misc
 .DS_Store
 *.pem
@@ -36,4 +40,5 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-/prisma/migrations
+/prisma/dev.db
+# /prisma/migrations - keep migrations in repo for deploy
