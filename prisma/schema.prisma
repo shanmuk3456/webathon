@@ -1,0 +1,163 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String      @id @default(cuid())
+  name           String
+  email          String      @unique
+  password       String      // bcrypt hash (password_hash)
+  houseAddress   String?     // Required for USER role; optional for ADMIN
+  communityName String      // Required for both; enforces isolation
+  role           String      @default("USER") // USER | ADMIN
+  civicPoints    Int         @default(0)
+  weeklyPoints   Int         @default(0)
+  lastLatitude   Float?
+  lastLongitude  Float?
+  lastLocationAt DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  issuesRaised   Issue[]     @relation("IssueReporter")
+  issuesVerified Issue[]     @relation("IssueVerifier")
+  issuesManaged  Issue[]     @relation("IssueAdmin")
+  issuesAssigned Issue[]     @relation("IssueAssignedVerifier")
+  verifications  Verification[]
+  adminProfile   Admin?      @relation("UserAdmin")
+  notifications  Notification[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([communityName])
+  @@index([email])
+  @@index([communityName, weeklyPoints]) // For leaderboard queries
+}
+
+model Issue {
+  id              String      @id @default(cuid())
+  title           String
+  description     String
+  imageUrl        String?     // Stored URL (cloud or local uploads)
+  latitude        Float
+  longitude       Float
+  urgency         String      @default("NORMAL") // NORMAL | URGENT
+  status          String      @default("PENDING_APPROVAL") // PENDING_APPROVAL, APPROVED, ...
+  communityName  String      // Enforces community isolation
+  supportCount   Int         @default(1) // Incremented when duplicate issue merged
+
+  // Relations (raised_by_user_id = reporterId)
+  reporterId      String
+  reporter        User        @relation("IssueReporter", fields: [reporterId], references: [id])
+  verifierId      String?     // Nearest user who verified
+  verifier        User?       @relation("IssueVerifier", fields: [verifierId], references: [id])
+  adminId         String?     // Admin managing this issue
+  admin           User?       @relation("IssueAdmin", fields: [adminId], references: [id])
+  assignedVerifierId String?  // Nearest eligible verifier assigned on approval
+  assignedVerifier   User?    @relation("IssueAssignedVerifier", fields: [assignedVerifierId], references: [id])
+  
+  verifications   Verification[]
+  pointsAwarded   Boolean     @default(false) // Track if points already awarded
+  auditLogs       IssueAuditLog[]
+  notifications   Notification[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  approvedAt      DateTime?
+  verifiedAt      DateTime?
+  inProgressAt    DateTime?
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+
+  @@index([communityName])
+  @@index([status])
+  @@index([communityName, status])
+  @@index([latitude, longitude])
+  @@index([createdAt])
+  @@index([reporterId, createdAt])
+}
+
+model Verification {
+  id        String   @id @default(cuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  verified  Boolean  @default(false)
+  kind      String   @default("EXISTENCE") // EXISTENCE | RESOLUTION
+  createdAt DateTime @default(now())
+
+  @@unique([issueId, userId, kind])
+  @@index([issueId])
+  @@index([userId, createdAt])
+}
+
+model Admin {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation("UserAdmin", fields: [userId], references: [id])
+  communityName String   // Admin manages one community
+  createdAt     DateTime @default(now())
+
+  @@index([communityName])
+}
+
+model IssueAuditLog {
+  id          String   @id @default(cuid())
+  issueId     String
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  performedBy String   // Admin user id
+  action      String   // APPROVE, REJECT, MARK_IN_PROGRESS, MARK_RESOLVED, CLOSE, FALSE_ALARM
+  fromStatus  String
+  toStatus    String
+  pointsChange Int?    // +10, -200, etc.
+  createdAt   DateTime @default(now())
+
+  @@index([issueId])
+  @@index([performedBy])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  issueId   String?
+  issue     Issue?   @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  type      String   // VERIFY_REQUEST, ADMIN_INFO, etc.
+  message   String
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([issueId])
+}
+
+// Civic points: +10 approved, -200 false report, +5 verification, +5 resolution verification.
+// Leaderboard uses weekly_points; reset weekly via cron.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String
+  p256dh    String   // client public key
+  auth      String   // auth secret
+  createdAt DateTime @default(now())
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+}
+
+model SystemSettings {
+  id                 String   @id @default(cuid())
+  key                String   @unique // e.g. "last_weekly_reset"
+  value              String   // ISO date or JSON
+  lastResetTimestamp DateTime? // last_reset_timestamp for weekly leaderboard
+  updatedAt          DateTime @updatedAt
+}
