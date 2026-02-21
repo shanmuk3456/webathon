@@ -40,11 +40,7 @@ export function requireUser(user: JWTPayload): boolean {
 export async function requireCommunityMatch(
   issueId: string,
   userCommunityName: string
-<<<<<<< HEAD
 ): Promise<{ ok: true; issue: NonNullable<Awaited<ReturnType<typeof db.issue.findFirst>>> } | NextResponse> {
-=======
-): Promise<{ ok: true; issue: Awaited<ReturnType<typeof db.issue.findFirst>> } | NextResponse> {
->>>>>>> 017bcdc (deploy)
   const issue = await db.issue.findFirst({
     where: { id: issueId },
   });

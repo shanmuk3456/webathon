@@ -83,14 +83,9 @@ export async function POST(request: NextRequest) {
       { status: created ? 201 : 200 }
     );
   } catch (error: unknown) {
-<<<<<<< HEAD
     if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError' && 'errors' in error) {
       const zodError = error as unknown as { errors: unknown };
       return NextResponse.json({ error: 'Validation error', details: zodError.errors }, { status: 400 });
-=======
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Validation error', details: (error as { errors: unknown }).errors }, { status: 400 });
->>>>>>> 017bcdc (deploy)
     }
     console.error('Create issue error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

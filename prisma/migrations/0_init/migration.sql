@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 -- CreateTable
-=======
-﻿-- CreateTable
->>>>>>> 187bcfd (PostgreSQL migration, remove SQLite db and user uploads from repo)
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -223,7 +219,3 @@ ALTER TABLE "Notification" ADD CONSTRAINT "Notification_issueId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "PushSubscription" ADD CONSTRAINT "PushSubscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-<<<<<<< HEAD
-=======
-
->>>>>>> 187bcfd (PostgreSQL migration, remove SQLite db and user uploads from repo)

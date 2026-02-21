@@ -37,11 +37,7 @@ export function PushRegistration() {
         }
         const newSub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
-<<<<<<< HEAD
           applicationServerKey: urlBase64ToUint8Array(vapidPublic) as BufferSource,
-=======
-          applicationServerKey: urlBase64ToUint8Array(vapidPublic),
->>>>>>> 017bcdc (deploy)
         });
         const token = getToken();
         if (!token) {

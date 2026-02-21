@@ -69,16 +69,10 @@ export async function PATCH(
 
     return NextResponse.json({ issue });
   } catch (error: unknown) {
-<<<<<<< HEAD
     if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError' && 'errors' in error) {
       const zodError = error as unknown as { errors: unknown };
       return NextResponse.json(
         { error: 'Validation error', details: zodError.errors },
-=======
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { error: 'Validation error', details: (error as { errors: unknown }).errors },
->>>>>>> 017bcdc (deploy)
         { status: 400 }
       );
     }

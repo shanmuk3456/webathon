@@ -15,19 +15,9 @@
 # production
 /build
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 187bcfd (PostgreSQL migration, remove SQLite db and user uploads from repo)
 # uploads (user content)
 /public/uploads/*
 !/public/uploads/.gitkeep
-
-<<<<<<< HEAD
-=======
->>>>>>> 017bcdc (deploy)
-=======
->>>>>>> 187bcfd (PostgreSQL migration, remove SQLite db and user uploads from repo)
 # misc
 .DS_Store
 *.pem
@@ -49,14 +39,4 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-<<<<<<< HEAD
-<<<<<<< HEAD
 /prisma/dev.db
-# /prisma/migrations - keep migrations in repo for deploy
-=======
-/prisma/migrations
->>>>>>> 017bcdc (deploy)
-=======
-/prisma/dev.db
-# /prisma/migrations - keep migrations in repo for deploy
->>>>>>> 187bcfd (PostgreSQL migration, remove SQLite db and user uploads from repo)

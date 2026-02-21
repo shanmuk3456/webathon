@@ -1,17 +1,12 @@
 /**
  * Duplicate issue detection and merging.
-<<<<<<< HEAD
  * Before creating: if existing issue within radius AND similar title/description -> increment supportCount, return existing.
  * If within radius but NOT similar (different problems) -> create new issue.
-=======
- * Before creating: if existing issue within radius -> increment supportCount, return existing.
->>>>>>> 017bcdc (deploy)
  */
 import { db } from '@/lib/db';
 import { calculateDistance } from '@/lib/utils';
 
 const DUPLICATE_RADIUS_METERS = Number(process.env.DUPLICATE_RADIUS_METERS) || 50;
-<<<<<<< HEAD
 const MIN_WORDS_IN_COMMON = 2; // Require at least 2 meaningful words to overlap
 const MIN_WORD_LENGTH = 3; // Ignore very short words (a, an, on, in, etc.)
 
@@ -31,8 +26,6 @@ function areSimilarIssues(titleA: string, titleB: string, descA: string, descB: 
   const overlap = [...wordsA].filter((w) => wordsB.has(w)).length;
   return overlap >= MIN_WORDS_IN_COMMON;
 }
-=======
->>>>>>> 017bcdc (deploy)
 
 export async function findOrCreateIssue(params: {
   latitude: number;
@@ -49,16 +42,11 @@ export async function findOrCreateIssue(params: {
       communityName: params.communityName,
       status: { notIn: ['CLOSED'] },
     },
-<<<<<<< HEAD
     select: { id: true, latitude: true, longitude: true, title: true, description: true, supportCount: true },
-=======
-    select: { id: true, latitude: true, longitude: true, title: true, supportCount: true },
->>>>>>> 017bcdc (deploy)
   });
 
   for (const e of existing) {
     const dist = calculateDistance(params.latitude, params.longitude, e.latitude, e.longitude);
-<<<<<<< HEAD
     const similar = areSimilarIssues(
       params.title,
       e.title,
@@ -66,9 +54,6 @@ export async function findOrCreateIssue(params: {
       e.description ?? ''
     );
     if (dist <= DUPLICATE_RADIUS_METERS && similar) {
-=======
-    if (dist <= DUPLICATE_RADIUS_METERS) {
->>>>>>> 017bcdc (deploy)
       const updated = await db.issue.update({
         where: { id: e.id },
         data: { supportCount: { increment: 1 } },

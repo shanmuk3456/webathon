@@ -4,10 +4,7 @@ import { db } from '@/lib/db';
 import { registerSchema } from '@/lib/validations';
 import { generateToken } from '@/lib/auth';
 import { setAuthCookie } from '@/lib/auth-cookie';
-<<<<<<< HEAD
 import type { Role } from '@/types';
-=======
->>>>>>> 017bcdc (deploy)
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,11 +75,7 @@ export async function POST(request: NextRequest) {
     const token = generateToken({
       userId: user.id,
       email: user.email,
-<<<<<<< HEAD
       role: user.role as Role,
-=======
-      role: user.role,
->>>>>>> 017bcdc (deploy)
       communityName: user.communityName,
     });
 

@@ -3,10 +3,7 @@ import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { loginSchema } from '@/lib/validations';
 import { generateToken } from '@/lib/auth';
-<<<<<<< HEAD
 import type { Role } from '@/types';
-=======
->>>>>>> 017bcdc (deploy)
 import { setAuthCookie } from '@/lib/auth-cookie';
 
 export async function POST(request: NextRequest) {
@@ -50,11 +47,7 @@ export async function POST(request: NextRequest) {
     const token = generateToken({
       userId: user.id,
       email: user.email,
-<<<<<<< HEAD
       role: user.role as Role,
-=======
-      role: user.role,
->>>>>>> 017bcdc (deploy)
       communityName: user.communityName,
     });
 

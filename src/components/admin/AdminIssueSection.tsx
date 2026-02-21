@@ -32,12 +32,8 @@ interface IssueItem {
   urgency?: string;
   imageUrl?: string | null;
   reporter?: { name: string };
-<<<<<<< HEAD
   createdAt: Date | string;
   supportCount?: number;
-=======
-  createdAt: string;
->>>>>>> 017bcdc (deploy)
 }
 
 interface AdminIssueSectionProps {
